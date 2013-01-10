@@ -1,0 +1,6 @@
+{
+    "require": {
+        "xuanyan/database": "dev-master",
+        "xuanyan/router": "dev-master"
+    }
+}

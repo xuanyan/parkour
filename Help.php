@@ -1,4 +1,5 @@
 <?php
+
 	function scan(){	
 		$service = json_decode(getConfig());
 		$serviceCheck = array();
@@ -12,22 +13,25 @@
 			echo check($value['ip'] , $value['port']);
 		}
 	}
-	
+
 	function getfast(){
 		$server = array();
 		$speed = array();
-		foreach (new DirectoryIterator(ROOT_PATH . DIRECTORY_SEPARATOR . 'service') as $fileInfo) {
+		foreach (new DirectoryIterator(ROOT_PATH . DIRECTORY_SEPARATOR . 'Logs') as $fileInfo) {
 		    if($fileInfo->isDot()){
 				continue;
 			} else {
 				$filename = $fileInfo->getPathname();
 				$handle = fopen($filename, "r");
-				$contents = fread($handle, filesize($filename));
+                $contents = '';
+                if ($size = filesize($filename)) {
+    				$contents = fread($handle, filesize($filename));
+                }
 				fclose($handle);
 				$key = $fileInfo->getFilename();
 				$server[$contents] = $key;
 				$speed[$key] = $contents;
-			} 			
+			}
 		}
 		if ($speed) {
 			sort($speed);
@@ -39,7 +43,7 @@
 		}
 		
 	}
-	
+
 	function delete(){
 		foreach (new DirectoryIterator(ROOT_PATH . DIRECTORY_SEPARATOR . 'service') as $fileInfo) {
 		    if($fileInfo->isDot()) continue;
@@ -49,13 +53,14 @@
 
 	function getConfig(){
 		//$ips = array('219.234.82.90:6666','5.8.242.10:8080','41.33.159.3:80');
-		$ips = array('219.234.82.90:6666','5.8.242.10:8080','41.33.159.3:80','118.97.150.179:8080');
-		return json_encode($ips);
+        return file_get_contents('http://wulala.ap01.aws.af.cm/getServers.php');
+		//$ips = array('219.234.82.90:6666','5.8.242.10:8080','41.33.159.3:80','118.97.150.179:8080');
+		//return json_encode($ips);
 	}
 
 	function check($host , $port) {
 		$file_name = $host.':'.$port;
-		$file_path = ROOT_PATH . DIRECTORY_SEPARATOR . 'service' . DIRECTORY_SEPARATOR . $file_name;
+		$file_path = ROOT_PATH . DIRECTORY_SEPARATOR . 'Logs' . DIRECTORY_SEPARATOR . $file_name;
 		if ( file_exists($file_path) && time() - filemtime($file_path) < 600) {
 			return $file_name . " file is existe! \n";
 		} else {
