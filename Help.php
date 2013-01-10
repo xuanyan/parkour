@@ -9,7 +9,7 @@
 			}
 		}
 		foreach ($serviceCheck as $key=> $value) {
-			check($value['ip'] , $value['port']);
+			echo check($value['ip'] , $value['port']);
 		}
 	}
 	
@@ -57,7 +57,7 @@
 		$file_name = $host.':'.$port;
 		$file_path = ROOT_PATH . DIRECTORY_SEPARATOR . 'service' . DIRECTORY_SEPARATOR . $file_name;
 		if ( file_exists($file_path) && time() - filemtime($file_path) < 600) {
-			echo $file_name . " file is existe! \n";
+			return $file_name . " file is existe! \n";
 		} else {
 			$service = new Service($host,$port);
 			$ping = $service->check();
@@ -65,6 +65,6 @@
 			$fp = fopen($file_path, 'w');
 			fwrite($fp, $ping);
 			fclose($fp);
-			echo $file_name ." file is created! \n";
+			return $file_name ." file is created! \n";
 		}
 	}
