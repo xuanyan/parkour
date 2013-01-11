@@ -59,7 +59,7 @@
 	}
 
 	function check($host , $port) {
-		$file_name = $host.':'.$port;
+		$file_name = $host.'_'.$port;
 		$file_path = ROOT_PATH . DIRECTORY_SEPARATOR . 'Logs' . DIRECTORY_SEPARATOR . $file_name;
 		if ( file_exists($file_path) && time() - filemtime($file_path) < 600) {
 			return $file_name . " file is existe! \n";
