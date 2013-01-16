@@ -1,16 +1,21 @@
 <?php
 
-	function scan(){	
-		$service = json_decode(getConfig());
+	function scan($route){
+		if (!$route){
+			echo 'Error config route';
+			exit;
+			//错误处理
+		}
+		$service = json_decode(getConfig($route.'/getServers.php'));
 		$serviceCheck = array();
 		foreach ($service as $value) {
 			$tmp = explode(':', $value);
-			if (count(explode('.', current($tmp))) == 4 ) {
-				$serviceCheck[] = array('ip'=>current($tmp),'port'=>next($tmp));
-			}
+			//if (count(explode('.', current($tmp))) == 4 ) {
+			$serviceCheck[] = array('ip'=>current($tmp),'port'=>next($tmp));
+			//}
 		}
 		foreach ($serviceCheck as $key=> $value) {
-			echo check($value['ip'] , $value['port']);
+			echo check($route , $value['ip'] , $value['port']);
 		}
 	}
 
@@ -51,24 +56,25 @@
 		}
 	}
 
-	function getConfig(){
+	function getConfig($route){
 		//$ips = array('219.234.82.90:6666','5.8.242.10:8080','41.33.159.3:80');
-        return file_get_contents('http://wulala.ap01.aws.af.cm/getServers.php');
+        return file_get_contents($route);
 		//$ips = array('219.234.82.90:6666','5.8.242.10:8080','41.33.159.3:80','118.97.150.179:8080');
 		//return json_encode($ips);
 	}
 
-	function check($host , $port) {
+	function check($route, $host , $port) {
 		$file_name = $host.'_'.$port;
 		$file_path = ROOT_PATH . DIRECTORY_SEPARATOR . 'Logs' . DIRECTORY_SEPARATOR . $file_name;
-		if ( file_exists($file_path) && time() - filemtime($file_path) < 600) {
+		if ( file_exists($file_path) && time() - filemtime($file_path) < 1) {
 			return $file_name . " file is existe! \n";
 		} else {
 			$service = new Service($host,$port);
 			$ping = $service->check();
             $ping || $ping = 9999;
             $server = $host.':'.$port;
-            file_get_contents("http://wulala.ap01.aws.af.cm/saveWork.php?server={$server}&speed={$ping}");
+            file_get_contents($route."/saveWork.php?server={$server}&speed={$ping}");
+			
 			$fp = fopen($file_path, 'w');
 			fwrite($fp, $ping);
 			fclose($fp);
